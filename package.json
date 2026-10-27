@@ -1,0 +1,12 @@
+{
+  "name": "docofcard-homepage",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "description": "DocOfCard navigation homepage for Cloudflare Workers",
+  "scripts": {
+    "test": "node --test",
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy"
+  }
+}
