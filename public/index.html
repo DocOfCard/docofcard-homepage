@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#faf8f4">
+  <meta name="description" content="DocOfCard · 即时交流、精选资讯与深入讨论，一站直达。">
+  <link rel="canonical" href="https://docofcard.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="DocOfCard">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:url" content="https://docofcard.com/">
+  <meta property="og:title" content="DocOfCard · 在这里，保持连接。">
+  <meta property="og:description" content="Telegram 群组、频道、Discourse 论坛与微博客，找到适合你的交流方式。">
+  <meta property="og:image" content="https://docofcard.com/social-card.png?v=1.3.0">
+  <meta property="og:image:secure_url" content="https://docofcard.com/social-card.png?v=1.3.0">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="DocOfCard · 在这里，保持连接。">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DocOfCard · 在这里，保持连接。">
+  <meta name="twitter:description" content="群组、频道、论坛、微博客，四个入口，一站直达。">
+  <meta name="twitter:image" content="https://docofcard.com/social-card.png?v=1.3.0">
+  <meta name="twitter:image:alt" content="DocOfCard · 在这里，保持连接。">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>DocOfCard</title>
+  <script>
+(() => {
+  const key = 'docofcard-theme';
+  const allowed = ['auto', 'light', 'dark'];
+  const media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  let choice = 'auto';
+  try {
+    const saved = window.localStorage.getItem(key);
+    if (allowed.includes(saved)) choice = saved;
+  } catch (_) { /* Storage can be disabled in private browsing. */ }
+
+  function apply() {
+    const resolved = choice === 'auto' ? (media && media.matches ? 'dark' : 'light') : choice;
+    const root = document.documentElement;
+    root.dataset.theme = resolved;
+    root.dataset.themeChoice = choice;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', resolved === 'dark' ? '#101116' : '#faf8f4');
+    document.querySelectorAll('[data-theme-option]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.themeOption === choice));
+    });
+  }
+
+  function initialize() {
+    document.querySelectorAll('[data-theme-option]').forEach((button) => {
+      button.addEventListener('click', () => {
+        choice = button.dataset.themeOption;
+        try { window.localStorage.setItem(key, choice); } catch (_) { /* Keep in current tab. */ }
+        apply();
+      });
+    });
+    apply();
+  }
+
+  apply(); // Before CSS paints: no flash of the wrong theme.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize, { once: true });
+  } else { initialize(); }
+  if (media) {
+    if (media.addEventListener) media.addEventListener('change', () => { if (choice === 'auto') apply(); });
+    else if (media.addListener) media.addListener(() => { if (choice === 'auto') apply(); });
+  }
+  window.addEventListener('storage', (event) => {
+    if (event.key === key) {
+      choice = allowed.includes(event.newValue) ? event.newValue : 'auto';
+      apply();
+    }
+  });
+})();
+  </script>
+  <style>
+:root {
+  color-scheme: dark;
+  --bg: #090e17;
+  --surface: #111b29;
+  --text: #f2f6fb;
+  --muted: #98a7ba;
+  --line: rgba(199, 221, 246, .13);
+  --soft-line: rgba(199, 221, 246, .08);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { min-width: 280px; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100svh;
+  overflow-x: clip;
+  color: var(--text);
+  background: linear-gradient(148deg, #0c1320, #090e17 56%, #0b1119);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 50% 53% at 9% 47%, rgba(54, 103, 151, .19), transparent 75%),
+    radial-gradient(ellipse 38% 38% at 83% 20%, rgba(29, 149, 146, .105), transparent 72%),
+    linear-gradient(148deg, #0c1320, #090e17 56%, #0b1119);
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .17;
+  background-image:
+    linear-gradient(to right, rgba(173,204,234,.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(173,204,234,.09) 1px, transparent 1px);
+  background-size: 70px 70px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.45), transparent 88%);
+}
+a { color: inherit; }
+.page {
+  width: 100%;
+  max-width: 1300px;
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 32px clamp(22px, 4.7vw, 72px) 24px;
+  display: flex;
+  flex-direction: column;
+}
+.header, .brand, .header-aside, .eyebrow, .section-top, .footer { display: flex; align-items: center; }
+.header { justify-content: space-between; gap: 18px; }
+.brand { gap: 12px; text-decoration: none; font-size: 17px; font-weight: 760; letter-spacing: -.055em; white-space: nowrap; }
+.brand-symbol {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(145, 229, 218, .31);
+  background: linear-gradient(140deg, rgba(95, 233, 208, .15), rgba(95, 233, 208, .035));
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+.brand-symbol svg { width: 21px; height: 21px; color: #89f2d8; }
+.brand-word span { color: #87f0d7; }
+.header-aside { gap: 10px; color: #b5c0ce; font-size: 11px; letter-spacing: .12em; white-space: nowrap; }
+.signal { width: 7px; height: 7px; border-radius: 99px; background: #78e9cc; box-shadow: 0 0 16px #6decc776; }
+.main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, .91fr) minmax(0, 1.09fr);
+  align-items: center;
+  gap: clamp(32px, 5.4vw, 82px);
+  padding: 65px 0 62px;
+}
+.hero, .links { min-width: 0; }
+.hero { padding: 0 0 18px; }
+.eyebrow { gap: 9px; color: #8fe9d2; font-size: 11px; font-weight: 650; letter-spacing: .16em; }
+.eyebrow::before { content: ""; width: 22px; height: 1px; background: currentColor; opacity: .75; }
+h1 {
+  margin: 23px 0 24px;
+  font-size: clamp(48px, 5.3vw, 78px);
+  line-height: 1.13;
+  font-weight: 760;
+  letter-spacing: -.075em;
+}
+h1 .highlight { display: block; background: linear-gradient(92deg, #84f0d7 2%, #8dc3f2 65%, #b6b5ff); background-clip: text; -webkit-background-clip: text; color: transparent; }
+.hero-desc { margin: 0; max-width: 420px; color: #a6b4c5; font-size: 15px; line-height: 2.05; letter-spacing: .005em; }
+.hero-note { display: flex; align-items: center; gap: 14px; margin-top: 42px; color: #75869a; font-size: 12px; }
+.hero-note::before { content: ""; width: 32px; height: 1px; background: rgba(153,195,212,.55); }
+.section-top { justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+.section-title { margin: 0; font-weight: 580; letter-spacing: .01em; font-size: 14px; color: #d9e1ee; }
+.section-count { color: #73869b; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: .055em; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.card {
+  --accent: #83dfd4;
+  --glow: rgba(76, 221, 190, .12);
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  min-height: 222px;
+  padding: 23px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr;
+  gap: 22px 10px;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 23px;
+  background: linear-gradient(153deg, rgba(26, 37, 53, .93), rgba(14, 23, 36, .96));
+  box-shadow: inset 0 1px rgba(255,255,255,.025), 0 15px 43px rgba(1,6,14,.11);
+  transition: transform .24s ease, border-color .24s ease, background .24s ease, box-shadow .24s ease;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 190px;
+  height: 190px;
+  top: -110px;
+  left: -90px;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--glow), transparent 70%);
+}
+.card--group { --accent: #7ecffb; --glow: rgba(78,169,250,.24); }
+.card--channel { --accent: #8dedcf; --glow: rgba(67,213,165,.2); }
+.card--forum { --accent: #a6a5ff; --glow: rgba(136,119,247,.22); }
+.card--micro { --accent: #f3c78c; --glow: rgba(238,174,100,.18); }
+.card-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 19%, transparent);
+  border-radius: 16px;
+}
+.card-icon svg { width: 25px; height: 25px; }
+.card-arrow {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  grid-column: 2;
+  grid-row: 1;
+  border: 1px solid rgba(204,224,248,.12);
+  border-radius: 50%;
+  color: #a8b5c7;
+  transition: transform .24s ease, color .24s ease, background .24s ease;
+}
+.card-arrow svg { width: 16px; height: 16px; }
+.card-copy { grid-column: 1 / -1; grid-row: 2; align-self: end; min-width: 0; }
+.card-tag { display: block; margin-bottom: 8px; color: var(--accent); font-size: 10px; font-weight: 690; letter-spacing: .16em; }
+.card-title { display: block; color: #f3f7fd; font-size: 19px; font-weight: 695; line-height: 1.3; letter-spacing: -.035em; }
+.card-desc { display: block; margin-top: 7px; color: #8ea1b5; font-size: 12px; line-height: 1.6; }
+.card.is-disabled { cursor: not-allowed; opacity: .69; }
+.card.is-disabled .card-arrow { color: #8391a5; }
+.card:focus-visible { outline: 2px solid #8ef1db; outline-offset: 4px; }
+@media (hover: hover) and (pointer: fine) {
+  a.card:hover { transform: translateY(-5px); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: linear-gradient(145deg, rgba(35, 49, 64, .95), rgba(17, 29, 44, .98)); box-shadow: 0 20px 45px rgba(0,0,0,.24); }
+  a.card:hover .card-arrow { color: #07141f; background: var(--accent); transform: translate(2px,-2px); }
+}
+.footer { justify-content: space-between; gap: 12px 24px; border-top: 1px solid var(--soft-line); padding-top: 19px; color: #72869b; font-size: 11px; letter-spacing: .015em; }
+.footer-right { color: #6d8094; }
+@media (max-width: 980px) {
+  .page { max-width: 850px; }
+  .main { grid-template-columns: 1fr; gap: 42px; padding: 76px 0 52px; }
+  .hero { padding: 0; }
+  .hero h1 { max-width: 680px; font-size: clamp(53px, 8.7vw, 70px); }
+  .hero-desc { max-width: 660px; }
+  .hero-note { margin-top: 22px; }
+  .card { min-height: 205px; }
+}
+@media (max-width: 600px) {
+  .page { padding: 22px 20px max(20px, env(safe-area-inset-bottom)); }
+  .brand { font-size: 16px; }
+  .brand-symbol { width: 35px; height: 35px; }
+  .header-aside { font-size: 10px; letter-spacing: .05em; }
+  .main { gap: 36px; padding: 57px 0 48px; }
+  h1, .hero h1 { font-size: clamp(42px, 11.8vw, 62px); margin: 19px 0 16px; letter-spacing: -.07em; }
+  .hero-desc { font-size: 13.5px; line-height: 1.9; }
+  .hero-note { margin-top: 22px; }
+  .section-top { margin-bottom: 14px; }
+  .cards { grid-template-columns: 1fr; gap: 11px; }
+  .card {
+    min-height: 110px;
+    padding: 16px 17px;
+    border-radius: 20px;
+    grid-template-columns: 48px minmax(0,1fr) 32px;
+    grid-template-rows: auto;
+    align-items: center;
+    gap: 14px;
+  }
+  .card-icon { width: 47px; height: 47px; grid-column: 1; grid-row: 1; border-radius: 14px; }
+  .card-icon svg { width: 24px; height: 24px; }
+  .card-copy { grid-column: 2; grid-row: 1; align-self: center; }
+  .card-arrow { grid-column: 3; grid-row: 1; width: 31px; height: 31px; }
+  .card-tag { margin-bottom: 4px; font-size: 9px; }
+  .card-title { font-size: 17px; }
+  .card-desc { margin-top: 3px; font-size: 11px; }
+  .footer { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 340px) {
+  .page { padding-left: 15px; padding-right: 15px; }
+  .header-aside span:last-child { display: none; }
+  .card { padding-inline: 14px; gap: 11px; }
+  .card-title { font-size: 16px; }
+}
+/* 支持 Viewport Segments API 的双屏/折叠设备：主内容不会落在中间铰链上。 */
+@media (horizontal-viewport-segments: 2) {
+  .page {
+    width: 100%;
+    max-width: none;
+    padding: 25px 0 21px;
+    display: grid;
+    grid-template-columns: env(viewport-segment-width 0 0) env(viewport-segment-width 1 0);
+    column-gap: calc(env(viewport-segment-left 1 0) - env(viewport-segment-right 0 0));
+    grid-template-rows: auto 1fr auto;
+  }
+  .header { grid-column: 1; grid-row: 1; padding: 0 clamp(17px, 3.5vw, 42px); }
+  .header-aside { display: none; }
+  .main { display: contents; }
+  .hero { grid-column: 1; grid-row: 2; align-self: center; padding: 32px clamp(17px, 3.5vw, 42px); }
+  h1, .hero h1 { font-size: clamp(35px, 4.25vw, 68px); }
+  .hero-desc { font-size: clamp(12px, 1.2vw, 15px); }
+  .links { grid-column: 2; grid-row: 2; align-self: center; padding: 25px clamp(17px, 3vw, 36px); }
+  .cards { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .card { min-height: 177px; padding: 16px; border-radius: 19px; }
+  .card-title { font-size: clamp(14px, 1.5vw, 19px); }
+  .card-desc { font-size: 11px; }
+  .card-icon { width: 43px; height: 43px; border-radius: 13px; }
+  .card-icon svg { width: 22px; height: 22px; }
+  .footer { grid-column: 1; grid-row: 3; margin: 0 clamp(17px, 3.5vw, 42px); }
+}
+@media (horizontal-viewport-segments: 2) and (max-width: 940px) {
+  .cards { grid-template-columns: 1fr; }
+  .card {
+    min-height: 91px;
+    display: grid;
+    grid-template-columns: 42px minmax(0,1fr) 29px;
+    grid-template-rows: auto;
+    align-items: center;
+    gap: 11px;
+    padding: 12px;
+  }
+  .card-icon { width: 41px; height: 41px; grid-column: 1; grid-row: 1; }
+  .card-copy { grid-column: 2; grid-row: 1; align-self: center; }
+  .card-arrow { width: 29px; height: 29px; grid-column: 3; grid-row: 1; }
+  .card-tag { margin-bottom: 4px; }
+  .card-desc { margin-top: 3px; }
+  .hero-note { display: none; }
+  .footer-right { display: none; }
+}
+@media (vertical-viewport-segments: 2) {
+  .page {
+    width: 100%;
+    max-width: none;
+    min-height: 100svh;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: env(viewport-segment-height 0 0) env(viewport-segment-height 0 1);
+    row-gap: calc(env(viewport-segment-top 0 1) - env(viewport-segment-bottom 0 0));
+  }
+  .header { grid-column: 1; grid-row: 1; z-index: 1; align-self: start; margin: 18px clamp(20px, 5vw, 70px); }
+  .main { display: contents; }
+  .hero { grid-column: 1; grid-row: 1; align-self: center; padding: 68px clamp(20px, 5vw, 70px) 18px; }
+  h1, .hero h1 { font-size: clamp(37px, 6.5vw, 58px); margin-block: 13px; }
+  .hero-note { display: none; }
+  .links { grid-column: 1; grid-row: 2; align-self: center; padding: 17px clamp(20px, 5vw, 70px); }
+  .cards { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  .card { min-height: 160px; padding: 15px; gap: 14px; border-radius: 17px; }
+  .card-icon { width: 41px; height: 41px; border-radius: 12px; }
+  .card-icon svg { width: 22px; height: 22px; }
+  .card-title { font-size: 15px; }
+  .card-desc { font-size: 10px; }
+  .footer { display: none; }
+}
+@media (vertical-viewport-segments: 2) and (max-width: 720px) {
+  .cards { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .card { min-height: 112px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* v1.1.0 — DocOfCard brand palette: warm paper, ink, coral red. */
+:root {
+  color-scheme: light;
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --text: #272b2f;
+  --muted: #747983;
+  --line: rgba(65, 55, 49, .095);
+  --soft-line: rgba(70, 55, 50, .13);
+  --accent: #f93822;
+}
+body {
+  background: #faf8f4;
+  color: var(--text);
+}
+body::before {
+  background:
+    radial-gradient(ellipse 43% 48% at 9% 48%, rgba(250, 85, 48, .056), transparent 78%),
+    radial-gradient(ellipse 42% 48% at 91% 15%, rgba(247, 198, 173, .095), transparent 70%),
+    linear-gradient(145deg, #fbfaf7 0%, #faf8f4 54%, #f8f4f0 100%);
+}
+body::after {
+  opacity: .42;
+  background-image:
+    linear-gradient(to right, rgba(122, 108, 100, .065) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(122, 108, 100, .065) 1px, transparent 1px);
+  background-size: 84px 84px;
+  mask-image: linear-gradient(to right, rgba(0,0,0,.38), transparent 80%);
+}
+::selection { background: rgba(249,56,34,.17); color: #242529; }
+.brand { color: #292c30; letter-spacing: -.045em; }
+.brand-symbol {
+  width: 42px; height: 42px; overflow: hidden;
+  background: #f93822; border: none; border-radius: 13px;
+  box-shadow: 0 5px 15px rgba(249,56,34,.12);
+}
+.brand-symbol img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.brand-word span { color: #f93822; }
+.header-aside { color: #7f8389; }
+.signal { background: #f93822; box-shadow: 0 0 12px rgba(249,56,34,.22); }
+.eyebrow { color: #c34c40; }
+h1 { color: #262a2e; }
+h1 .highlight {
+  background: linear-gradient(108deg, #ed402c, #fc6349 68%, #e34740);
+  background-clip: text; -webkit-background-clip: text; color: transparent;
+}
+.hero-desc { color: #6b7179; }
+.hero-note { color: #999b9d; }
+.hero-note::before { background: rgba(249,56,34,.29); }
+.section-title { color: #3c4246; }
+.section-count { color: #a0a1a4; }
+.card {
+  background: linear-gradient(156deg, #ffffff 0%, #fffefd 100%);
+  border-color: #eae5e0;
+  box-shadow: 0 12px 44px rgba(82,55,42,.035), inset 0 1px rgba(255,255,255,.98);
+}
+.card::before { opacity: .62; }
+.card--group { --accent: #2988aa; --glow: rgba(40,144,171,.12); }
+.card--channel { --accent: #289a7c; --glow: rgba(51,171,122,.12); }
+.card--forum { --accent: #7b6ab7; --glow: rgba(143,118,203,.10); }
+.card--micro { --accent: #c78552; --glow: rgba(235,164,102,.11); }
+.card-icon {
+  background: color-mix(in srgb, var(--accent) 7%, white);
+  border-color: color-mix(in srgb, var(--accent) 14%, white);
+}
+.card-arrow { border-color: #e9e5e2; color: #9c9b9a; }
+.card-title { color: #2c3136; }
+.card-desc { color: #84878b; }
+.card.is-disabled .card-arrow { color: #8f9193; }
+.card:focus-visible { outline: 3px solid #f93822; outline-offset: 3px; }
+.footer { color: #a2a3a5; }
+.footer-right { color: #b6b1ae; }
+@media (hover: hover) and (pointer: fine) {
+  a.card:hover {
+    transform: translateY(-5px);
+    border-color: color-mix(in srgb, var(--accent) 36%, white);
+    background: linear-gradient(155deg, #ffffff, #fffaf7);
+    box-shadow: 0 18px 45px rgba(103,65,47,.10), 0 2px 8px rgba(103,65,47,.045);
+  }
+  a.card:hover .card-arrow { color: white; background: var(--accent); }
+}
+@media (max-width: 600px) {
+  .page { padding-top: max(22px,env(safe-area-inset-top)); }
+  .brand-symbol { width: 38px; height: 38px; border-radius: 12px; }
+  .card { box-shadow: 0 5px 22px rgba(82,55,42,.03); }
+}
+
+
+/* v1.1.1 — separate original wordmark logo from browser favicon. */
+.brand { display: inline-flex; align-items: center; gap: 0; width: fit-content; }
+.brand-logo { display: block; width: clamp(160px, 17vw, 210px); height: auto; max-width: 100%; }
+@media (max-width: 600px) { .brand-logo { width: 172px; } }
+@media (max-width: 340px) { .brand-logo { width: 158px; } }
+@media (horizontal-viewport-segments: 2) { .brand-logo { width: clamp(142px, 19vw, 205px); } }
+
+
+/* v1.2.0 - brand-aligned, non-inverted dark theme */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #101116;
+  --surface: #1c1e25;
+  --text: #f2f0ed;
+  --muted: #aba8aa;
+  --line: rgba(239,238,239,.12);
+  --soft-line: rgba(243,237,233,.13);
+}
+html[data-theme="dark"] body { background: #101116; color: var(--text); }
+html[data-theme="dark"] body::before {
+  background: radial-gradient(ellipse 46% 53% at 8% 46%, rgba(249,56,34,.105), transparent 78%),
+    radial-gradient(ellipse 45% 45% at 88% 12%, rgba(181,102,83,.085), transparent 76%),
+    linear-gradient(147deg, #16171e 0%, #101116 54%, #19151a 100%);
+}
+html[data-theme="dark"] body::after {
+  opacity: .3;
+  background-image: linear-gradient(to right, rgba(246,229,221,.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(246,229,221,.07) 1px, transparent 1px);
+}
+html[data-theme="dark"] ::selection { background: rgba(249,56,34,.38); color: #fff; }
+html[data-theme="dark"] .brand { color: #f3f0ec; }
+html[data-theme="dark"] h1 { color: #f6f3ef; }
+html[data-theme="dark"] h1 .highlight {
+  background: linear-gradient(106deg, #ff6c59 5%, #ff9276 61%, #ffa28d);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+html[data-theme="dark"] .hero-desc { color: #b2b1b6; }
+html[data-theme="dark"] .hero-note { color: #97949d; }
+html[data-theme="dark"] .hero-note::before { background: rgba(249,103,86,.4); }
+html[data-theme="dark"] .section-title { color: #e2dddc; }
+html[data-theme="dark"] .section-count { color: #99939a; }
+html[data-theme="dark"] .card {
+  background: linear-gradient(154deg, rgba(34,35,43,.98), rgba(25,26,33,.97));
+  border-color: rgba(241,231,224,.12);
+  box-shadow: 0 10px 35px rgba(0,0,0,.15), inset 0 1px rgba(255,255,255,.035);
+}
+html[data-theme="dark"] .card::before { opacity: .75; }
+html[data-theme="dark"] .card--group { --accent: #83c6ec; --glow: rgba(47,167,229,.16); }
+html[data-theme="dark"] .card--channel { --accent: #70d7ae; --glow: rgba(48,184,132,.16); }
+html[data-theme="dark"] .card--forum { --accent: #b2a3f6; --glow: rgba(136,120,224,.16); }
+html[data-theme="dark"] .card--micro { --accent: #f1bd8d; --glow: rgba(210,145,77,.15); }
+html[data-theme="dark"] .card-icon {
+  background: color-mix(in srgb, var(--accent) 10%, #22242b);
+  border-color: color-mix(in srgb, var(--accent) 20%, #22242b);
+}
+html[data-theme="dark"] .card-arrow { color: #b4b1b7; border-color: rgba(245,237,235,.15); }
+html[data-theme="dark"] .card-title { color: #f7f4f2; }
+html[data-theme="dark"] .card-desc { color: #b2adb5; }
+html[data-theme="dark"] .footer { color: #aaa5aa; }
+html[data-theme="dark"] .footer-right { color: #98929a; }
+html[data-theme="dark"] .card:focus-visible { outline-color: #ff8577; }
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="dark"] a.card:hover {
+    background: linear-gradient(154deg, #2c2c36, #202129);
+    border-color: color-mix(in srgb, var(--accent) 40%, #272832);
+    box-shadow: 0 20px 48px rgba(0,0,0,.26);
+  }
+  html[data-theme="dark"] a.card:hover .card-arrow { color: #14141a; background: var(--accent); }
+}
+
+/* Theme choice: visible three-way control, icon-only at small widths. */
+.theme-control {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid #e7e0db;
+  border-radius: 14px;
+  background: rgba(255,255,255,.74);
+  box-shadow: 0 3px 12px rgba(79,59,47,.035);
+}
+.theme-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 33px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #777983;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 580;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.theme-option svg { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.theme-option[aria-pressed="true"] { background: #f93822; color: white; box-shadow: 0 2px 9px rgba(249,56,34,.19); }
+.theme-option:focus-visible { outline: 2px solid #f93822; outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .theme-option:not([aria-pressed="true"]):hover { background: #f3eee9; color: #2a2b2d; }
+}
+html[data-theme="dark"] .theme-control { border-color: rgba(243,236,235,.16); background: rgba(41,41,50,.76); box-shadow: none; }
+html[data-theme="dark"] .theme-option { color: #bbb6bd; }
+html[data-theme="dark"] .theme-option[aria-pressed="true"] { color: white; background: #c63d30; box-shadow: 0 2px 11px rgba(249,56,34,.16); }
+html[data-theme="dark"] .theme-option:focus-visible { outline-color: #ff7e70; }
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="dark"] .theme-option:not([aria-pressed="true"]):hover { background: #3c3b47; color: white; }
+}
+@media (max-width: 600px) {
+  .header { gap: 8px; }
+  .theme-control { gap: 1px; padding: 3px; border-radius: 12px; }
+  .theme-option { padding: 0; width: 35px; min-height: 34px; border-radius: 9px; }
+  .theme-option .theme-label { display: none; }
+}
+@media (max-width: 340px) {
+  .brand-logo { width: 135px; }
+  .theme-control { padding: 2px; }
+  .theme-option { width: 30px; min-height: 31px; }
+}
+@media (horizontal-viewport-segments: 2) {
+  .header { gap: 8px; }
+  .theme-option { width: 34px; min-height: 33px; padding: 0; }
+  .theme-option .theme-label { display: none; }
+  .brand-logo { width: clamp(120px, 17vw, 190px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-option { transition: none; }
+}
+
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="brand" aria-label="DocOfCard 首页">
+        <img class="brand-logo" src="/logo.svg" alt="DocOfCard" width="240" height="39">
+      </div>
+      <div class="theme-control" role="group" aria-label="外观主题">
+        <button class="theme-option" type="button" data-theme-option="auto" aria-label="自动跟随系统" title="自动跟随系统" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="theme-label">自动</span></button>
+        <button class="theme-option" type="button" data-theme-option="light" aria-label="浅色模式" title="浅色模式" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><span class="theme-label">浅色</span></button>
+        <button class="theme-option" type="button" data-theme-option="dark" aria-label="深色模式" title="深色模式" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.1A8.7 8.7 0 0 1 9.9 3.5 8.7 8.7 0 1 0 20.5 14.1Z"/></svg><span class="theme-label">深色</span></button>
+      </div>
+    </header>
+    <main class="main" id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title">在这里，<br><span class="highlight">保持连接。</span></h1>
+        <p class="hero-desc">无论是即时交流、获取资讯，还是认真分享一个想法，都可以从这里出发。找到适合你的方式，加入我们。</p>
+      </section>
+      <section class="links" aria-labelledby="link-title">
+        <div class="cards"><a class="card card--group" href="https://t.me/DocOfCard_chat" target="_blank" rel="noopener noreferrer" aria-label="前往Telegram 群组（在新窗口打开）">
+    <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.3 4.2 3.7 10.7c-1.1.4-1.1 1 0 1.3l4.1 1.3 1.6 5c.2.6.3.9.8.9.4 0 .6-.2.9-.5l2.4-2.4 4.6 3.4c.8.5 1.3.3 1.5-.7l2.3-13.3c.3-1.2-.4-1.7-1.6-1.2Z" fill="currentColor"/><path d="m8 13.3 10.5-7.4-8.2 9.4-.3 3.6" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/></svg></span>
+    <span class="card-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5.8 18.2 18.2 5.8M7.8 5.8h10.4v10.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="card-copy"><span class="card-tag">COMMUNITY</span><span class="card-title">Telegram 群组</span><span class="card-desc">入群导航，按提示加入群聊</span></span>
+  </a>
+<a class="card card--channel" href="https://t.me/DocOfCard_channel" target="_blank" rel="noopener noreferrer" aria-label="前往Telegram 频道（在新窗口打开）">
+    <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3.5 10.5 16.2-6c.8-.3 1.3.2 1.1 1l-2.4 13.7c-.1.7-.7.9-1.3.5l-4.5-3.4-2.4 2.3c-.4.4-1.1.2-1.2-.4l-1.2-4.5-4.3-1.4c-.8-.2-.8-1.3 0-1.6Z" stroke="currentColor" stroke-width="1.55" stroke-linejoin="round"/><path d="m8.1 13.7 9.1-6.6-6.8 8.1" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="card-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5.8 18.2 18.2 5.8M7.8 5.8h10.4v10.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="card-copy"><span class="card-tag">BROADCAST</span><span class="card-title">Telegram 频道</span><span class="card-desc">及时获取最新消息与精选内容</span></span>
+  </a>
+<a class="card card--forum" href="https://forum.docofcard.com/" target="_blank" rel="noopener noreferrer" aria-label="前往Discourse 论坛（在新窗口打开）">
+    <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.2 11.4a7.9 7.9 0 0 1-7.9 7.9c-1.2 0-2.3-.3-3.3-.7l-4.2 1.1.9-3.7a7.9 7.9 0 1 1 14.5-4.6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.4 10.6h7.8M8.4 13.8h5.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+    <span class="card-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5.8 18.2 18.2 5.8M7.8 5.8h10.4v10.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="card-copy"><span class="card-tag">DISCUSSION</span><span class="card-title">Discourse 论坛</span><span class="card-desc">阅读文章，参与更深入的讨论</span></span>
+  </a>
+<a class="card card--micro" href="https://tg.docofcard.com/" target="_blank" rel="noopener noreferrer" aria-label="前往微博客（在新窗口打开）">
+    <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4.2" y="4.4" width="15.6" height="15.2" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M8 9.5h8M8 12.9h8M8 16.2h4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+    <span class="card-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5.8 18.2 18.2 5.8M7.8 5.8h10.4v10.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="card-copy"><span class="card-tag">MOMENTS</span><span class="card-title">微博客</span><span class="card-desc">短篇记录、观点与日常动态</span></span>
+  </a></div>
+      </section>
+    </main>
+    <footer class="footer"><span>© 2026 DocOfCard. All rights reserved.</span><span class="footer-right">Stay curious. Stay connected.</span></footer>
+  </div>
+</body>
+</html>
